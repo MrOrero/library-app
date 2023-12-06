@@ -48,6 +48,14 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.save(category);
     }
 
+    @Override
+    public void deleteCategory(Long id) {
+        Optional<Category> entity = categoryRepository.findById(id);
+        Category category = unwrapCategory(entity, id);
+
+        categoryRepository.delete(category);
+    }
+
 
     static Category unwrapCategory(Optional<Category> entity, Long id) {
         if (entity.isPresent())
