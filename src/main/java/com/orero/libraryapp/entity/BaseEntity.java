@@ -5,8 +5,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -30,13 +28,11 @@ public abstract class BaseEntity implements Serializable {
 
     @CreatedDate
     @Column(name = "created_date", updatable = false)
-    @JsonIgnore
     private Instant createdDate = Instant.now();
 
 
-    @LastModifiedDate
+    @LastModifiedDate 
     @Column(name = "last_modified_date")
-    @JsonIgnore
     private Instant lastModifiedDate;
 
     public Long getId() {

@@ -11,8 +11,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryDto {
-    private String name;
+public class BookDto {
+
+    private String title;
+
+    private String author;
 
     private String description;
+
+    private Integer publishYear;
+
+    private String isbn;
+
+    private Double price;
 }
