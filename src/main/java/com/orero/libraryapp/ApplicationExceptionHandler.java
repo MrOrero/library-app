@@ -16,18 +16,24 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.orero.libraryapp.exception.EntityNotFoundException;
 import com.orero.libraryapp.exception.ErrorResponse;
 
 @ControllerAdvice
-public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler{
+public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
             HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-                
+
         List<String> errors = new ArrayList<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> errors.add(error.getDefaultMessage()));
         return new ResponseEntity<>(new ErrorResponse(errors), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ EntityNotFoundException.class })
+    public ResponseEntity<Object> handleResourceNotFoundException(RuntimeException ex) {
+        return new ResponseEntity<>(new ErrorResponse(Arrays.asList(ex.getLocalizedMessage())), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
