@@ -4,11 +4,13 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.orero.libraryapp.dto.BookDto;
 import com.orero.libraryapp.entity.Book;
 import com.orero.libraryapp.entity.Category;
+import com.orero.libraryapp.entity.User;
 import com.orero.libraryapp.exception.EntityNotFoundException;
 import com.orero.libraryapp.mappers.BookMapper;
 import com.orero.libraryapp.repository.BookRepository;
@@ -20,9 +22,10 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class BookServiceImpl implements BookService {
 
-    private final BookRepository bookRepository;
+    private BookRepository bookRepository;
     private final BookMapper bookMapper;
     private final CategoryServiceImpl categoryServiceImpl;
+    private BaseServiceImpl baseServiceImpl;
 
     @Override
     public Page<Book> getAllBooks(Pageable pageable) {
@@ -72,6 +75,26 @@ public class BookServiceImpl implements BookService {
 
 
         return bookRepository.save(existingBook);
+    }
+
+    @Override
+    public Book addFavoriteBook(Long bookId) {
+        // Check if the book with the given id exists
+        Book existingBook = getBook(bookId);
+
+        // Check if the user with the given id exists
+        User currentUser = baseServiceImpl.getCurrentUser();
+
+        existingBook.getUsers().add(currentUser);
+
+        return bookRepository.save(existingBook);
+    }
+
+    @Override
+    public Page<Book> getFavoriteBooks(Pageable pageable) {
+        User currentUser = baseServiceImpl.getCurrentUser();
+
+        return bookRepository.findByUsers(currentUser, pageable);
     }
 
     static Book unwrapBook(Optional<Book> entity, Long id) {

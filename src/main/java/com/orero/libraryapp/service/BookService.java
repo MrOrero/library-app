@@ -18,4 +18,8 @@ public interface BookService {
     void deleteBook(Long id);
 
     Book addBookToCategory(Long bookId, Long categoryId);
+
+    Book addFavoriteBook(Long bookId);
+
+    Page<Book> getFavoriteBooks(Pageable pageable);
 }

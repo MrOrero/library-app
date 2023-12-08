@@ -25,7 +25,7 @@ public class BookController {
         return new ResponseEntity<>(bookService.getAllBooks(pageable), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/details/{id}")
     public ResponseEntity<Book> findById(@PathVariable Long id) {
         return new ResponseEntity<>(bookService.getBook(id), HttpStatus.OK);
     }
@@ -50,4 +50,15 @@ public class BookController {
     public ResponseEntity<Book> addBookToCategory(@PathVariable Long bookId, @PathVariable Long categoryId) {
         return new ResponseEntity<>(bookService.addBookToCategory(bookId, categoryId), HttpStatus.OK);
     }
+
+    @PutMapping("/add-favorite/{bookId}")
+    public ResponseEntity<Book> addFavoriteBook(@PathVariable Long bookId) {
+        return new ResponseEntity<>(bookService.addFavoriteBook(bookId), HttpStatus.OK);
+    }
+
+    @GetMapping("/favorites")
+    public ResponseEntity<Iterable<Book>> getFavoriteBooks(Pageable pageable) {
+        return new ResponseEntity<>(bookService.getFavoriteBooks(pageable), HttpStatus.OK);
+    }
+
 }

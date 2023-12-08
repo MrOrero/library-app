@@ -1,44 +1,57 @@
-// package com.ltp.gradesubmission.security.filter;
+package com.orero.libraryapp.security.filter;
 
-// import java.io.IOException;
-// import java.util.Arrays;
+import java.io.IOException;
+import java.util.Arrays;
 
-// import javax.servlet.FilterChain;
-// import javax.servlet.ServletException;
-// import javax.servlet.http.HttpServletRequest;
-// import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-// import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-// import org.springframework.security.core.Authentication;
-// import org.springframework.security.core.context.SecurityContextHolder;
-// import org.springframework.web.filter.OncePerRequestFilter;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.orero.libraryapp.entity.User;
+import com.orero.libraryapp.security.SecurityConstants;
+import com.orero.libraryapp.service.UserService;
 
-// import com.auth0.jwt.JWT;
-// import com.auth0.jwt.algorithms.Algorithm;
-// import com.ltp.gradesubmission.security.SecurityConstants;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-// public class JWTAuthorizationFilter extends OncePerRequestFilter {
+public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
-//     @Override
-//     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-//             throws ServletException, IOException {
-//         String header = request.getHeader(SecurityConstants.AUTHORIZATION);
+    // @Autowired
+    // private UserService userService;
 
-//         if (header == null || !header.startsWith(SecurityConstants.BEARER)) {
-//             Authentication authentication = new UsernamePasswordAuthenticationToken(null,
-//                     null, Arrays.asList());
-//             SecurityContextHolder.getContext().setAuthentication(authentication);
-//             filterChain.doFilter(request, response);
-//             return;
-//         }
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        String header = request.getHeader(SecurityConstants.AUTHORIZATION);
 
-//         String token = header.replace(SecurityConstants.BEARER, "");
-//         String user = JWT.require(Algorithm.HMAC512(SecurityConstants.SECRET_KEY))
-//                 .build()
-//                 .verify(token)
-//                 .getSubject();
-//         Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, Arrays.asList());
-//         SecurityContextHolder.getContext().setAuthentication(authentication);
-//         filterChain.doFilter(request, response);
-//     }
-// }
+        if (header == null || !header.startsWith(SecurityConstants.BEARER)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String token = header.replace(SecurityConstants.BEARER, "");
+        String user = JWT.require(Algorithm.HMAC512(SecurityConstants.SECRET_KEY))
+                .build()
+                .verify(token)
+                .getSubject();
+
+        try {
+            // User loggedInUser = userService.getUser(user);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(user, null,
+                    Arrays.asList());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            // print the error
+            e.printStackTrace();
+            logger.error("Error while setting the authentication");
+        }
+
+    }
+}

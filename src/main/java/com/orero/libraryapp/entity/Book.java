@@ -51,7 +51,7 @@ public class Book extends BaseEntity {
 
     @ManyToMany
     @JoinTable(name = "favorite_books", joinColumns = @JoinColumn(name = "book_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<Book> users;
+    private Set<User> users;
 
     @Override
     public String toString() {

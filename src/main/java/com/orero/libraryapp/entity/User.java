@@ -42,5 +42,6 @@ public class User extends BaseEntity {
 	@JsonIgnore
     @JoinTable(name = "favorite_books", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "book_id"))
     private Set<Book> books;
+	
 
 }
